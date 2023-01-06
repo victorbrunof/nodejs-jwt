@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const controllerUser = {
     async register(req, res) {
-        const { name, email, password, confirmpassword } = req.body
+        const { name, email, telefone, cpf } = req.body
 
         // Validations
         if(!name) {
@@ -15,12 +15,12 @@ const controllerUser = {
             return res.status(422).json({ msg: 'O email é obrigatório' })
         }
 
-        if(!password) {
-            return res.status(422).json({ msg: 'A senha é obrigatória' })
+        if(!telefone) {
+            return res.status(422).json({ msg: 'O telefone é obrigatório' })
         }
 
-        if(password !== confirmpassword) {
-            return res.status(422).json({ msg: 'A senhas não conferem!' })
+        if(!cpf) {
+            return res.status(422).json({ msg: 'O cpf é obrigatório' })
         }
 
         // check if user exists
@@ -31,14 +31,15 @@ const controllerUser = {
         }
 
         // create password
-        const salt = await bcrypt.genSalt(12)
-        const passwordHash = await bcrypt.hash(password, salt)
+        // const salt = await bcrypt.genSalt(12)
+        // const passwordHash = await bcrypt.hash(password, salt)
 
         // create user
         const user = new User({
             name,
             email,
-            password: passwordHash,
+            telefone,
+            cpf,
         })
 
         try {
@@ -47,6 +48,21 @@ const controllerUser = {
 
             res.status(201).json({ msg: 'Usuário criado com sucesso' })
             
+        } catch (error) {
+            console.log(error)
+
+            res
+            .status(500)
+            .json({
+                msg: 'Aconteceu um erro no servidor, tente novamente mais tarde!'
+            })
+        }
+    },
+    async getUsers(req, res) {
+        console.log("teste");
+        try {
+            const users = await User.find({}, '-password')
+            res.status(200).json({ users })
         } catch (error) {
             console.log(error)
 
@@ -129,6 +145,7 @@ const controllerUser = {
             res.status(200).json({ msg: 'Autenticação realizada com sucesso!', token })
 
         } catch(err) {
+            console.log(err)
             res
             .status(500)
             .json({

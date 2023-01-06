@@ -19,7 +19,7 @@ app.use("/user", cors(config.cors), express.json(), routeUser)
 
 // Credencials
 const DB_USER = process.env.DB_USER
-const DB_PASSWORD = process.env.DB_PASS
+const DB_PASSWORD = process.env.DB_PASSWORD
 mongoose.set("strictQuery", true);
 
 mongoose.connect(
